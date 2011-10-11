@@ -1,0 +1,2 @@
+第一次课时间原定于2011年10月11日（星期三上午），内容为CS61的2011年课件
+Lec01-Intro.pdf 和 Lec02-Representation_of_info.pdf 两章slide。
