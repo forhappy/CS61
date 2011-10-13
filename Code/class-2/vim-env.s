@@ -1,6 +1,6 @@
 .section .data
 output:
-	.asciz “%s\n”
+	.asciz "%s\n"
 
 .section .text
 .globl _start
