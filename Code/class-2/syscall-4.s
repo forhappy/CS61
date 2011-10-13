@@ -1,7 +1,7 @@
 # cfunctest.s - An example of using C functions */
 .section .data
 output:
-	.asciz “This is a test\n”
+	.asciz "This is a test\n"
 
 .section .text
 .globl _start
