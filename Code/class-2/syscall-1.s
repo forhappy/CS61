@@ -1,7 +1,7 @@
 # syscall-1.s - An example of passing input values to a system call
 .section .data
 output:
-	.ascii “This is a test message.\n”
+	.ascii "This is a test message.\n"
 output_end:
 	.equ len, output_end - output
 .section .text
