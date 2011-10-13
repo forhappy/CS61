@@ -2,9 +2,9 @@
 timespec:
 	.int 5, 0
 output:
-	.ascii “This is a test\n”
+	.ascii "This is a test\n"
 output_end:
-	.equ len, output_end – output
+	.equ len, output_end, output
 
 .section .bss
 	.lcomm rem, 8
