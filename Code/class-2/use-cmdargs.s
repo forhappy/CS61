@@ -1,6 +1,6 @@
 .section .data
 output:
-	.asciz “The area is: %f\n”
+	.asciz "The area is: %f\n"
 
 .section .bss
 	.lcomm result, 4
