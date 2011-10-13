@@ -1,8 +1,8 @@
 .section .data
 output1:
-	.asciz “There are %d parameters:\n”
+	.asciz "There are %d parameters:\n"
 output2:
-	.asciz “%s\n”
+	.asciz "%s\n"
 
 .section .text
 .globl _start
