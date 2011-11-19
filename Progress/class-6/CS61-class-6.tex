@@ -1,0 +1,108 @@
+\documentclass[a4paper, 11pt]{article}
+
+%%%%%% use packages %%%%%%
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage[unicode]{hyperref}
+\usepackage{indentfirst}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{flafter}
+\usepackage{enumerate}
+\usepackage{leftidx}
+
+%%%%%% indent settings %%%%%%
+\setlength{\parindent}{20pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.25ex}
+\setlength{\baselineskip}{1.0ex}
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{CJK}{UTF8}{gbsn}
+
+
+\title{CS61第六次课程记录}
+\author{傅海平\\
+\textsc{Institute Of Computing Technology,}\\
+\textsc{Chinese Academy Of Sciences}\\
+haipingf@gmail.com\\
+}
+\date{\today}
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Topics}
+\begin{center}
+\Large{内存(Memory)及存储(Storage)技术，缓存(Caching)}
+\end{center}
+
+\section{Progress}
+早上9点开始，9:00 - 10:50 学习 Lec12-Memory\_and\_Storage\_Technologies.pdf 和
+Lec13-Caching.pdf 两张课程讲义，然后10:50开始讨论学习过程中遇到的问题
+。
+\section{Learning Details}
+\subsection{Course Sketch}
+\subsubsection{Memory}
+\begin{itemize}
+  \item{静态RAM和动态RAM}
+  \item{动态内存常见组织结构，$d \times w$: $d$ supercells of size $w$ bits}
+
+  \item{内存模块}
+  \item{加强的DRAM??}
+	\begin{itemize}
+	  \item{同步DRAM}
+	  \item{双倍速同步DRAM}
+	  \item{RamBus DRAM}
+	  \end{itemize}
+	\item{过时的技术}
+	  \begin{itemize}
+		\item{FPM DRAM}
+		\item{EDO DRAM}
+		\item{Video RAM}
+		\item{CDRAM, GDRAM}
+		\end{itemize}
+	  \item{非易失性内存ROM， MRAM， FeRAM, PROM, EPROM, EEPROM}
+	  \item{传统内存总线}
+	  \item{总线容错，Hamming码}
+  \end{itemize}
+\subsubsection{Disk Drives}
+\begin{itemize}
+  \item{记录密度}
+  \item{道密度}
+  \item{面密度}
+  \item{寻道时间}
+  \item{旋转延迟}
+  \item{传输时间}
+  \item{\dots}
+  \item{逻辑块}
+  \end{itemize}
+  \subsubsection{IO and Memory Buses}
+  \subsubsection{Solid-state Disks}
+  \subsubsection{The Principle of Locality}
+  \begin{itemize}
+	\item{局部性原理：时间局部性和空间局部性}
+	\item{时间局部性：Recently referenced memory addresses are likely to be referenced in the near future.}
+	\item{空间局部性：Similar memory addresses tend to be referenced close together in time.}
+	\end{itemize}
+  \subsubsection{Memory Hierarchies}
+  \begin{itemize}
+	\item{关键点}
+	\end{itemize}
+  \subsubsection{Caching Concepts}
+  \subsubsection{Direct-Mapped Cache Organization}
+  \begin{itemize}
+	\item{Cache失效：冷失效，容量失效，冲突失效}
+	\item{工作集:working set}
+	\end{itemize}
+  \subsubsection{Set-Associative Cache Organization}
+  \subsubsection{Multi-level caches}
+  \subsubsection{Cache Writes}
+  \begin{itemize}
+	\item{写穿策略}
+	\item{写回策略}
+	\end{itemize}
+\subsection{Problems}
+\subsection{Solutions}
+\end{CJK}
+\end{document}
