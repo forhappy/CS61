@@ -1,0 +1,71 @@
+\documentclass[a4paper, 11pt]{article}
+
+%%%%%% use packages %%%%%%
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage[unicode]{hyperref}
+\usepackage{indentfirst}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{flafter}
+\usepackage{enumerate}
+\usepackage{leftidx}
+
+%%%%%% indent settings %%%%%%
+\setlength{\parindent}{20pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.25ex}
+\setlength{\baselineskip}{1.0ex}
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{CJK}{UTF8}{gbsn}
+
+
+\title{CS61第七次课程记录}
+\author{傅海平\\
+\textsc{Institute Of Computing Technology,}\\
+\textsc{Chinese Academy Of Sciences}\\
+haipingf@gmail.com\\
+}
+\date{\today}
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Topics}
+\begin{center}
+  \Large{Cache 性能测评和优化 \& 虚拟内存}
+\end{center}
+
+\section{Progress}
+早上9点开始，9:00 - 10:50 学习 Lec14-Cache\_measurement.pdf 和
+Lec15-Virtual\_Memory.pdf 两张课程讲义，然后11:00开始讨论学习过程中遇到的问题
+。
+\section{Learning Details}
+\subsection{Course Sketch}
+\subsubsection{Cache performance metrics}
+\begin{itemize}
+  \item{Miss Rate : 失效率, $L1: 3-10\%; L2: < 1\%$}
+  \item{Hit Time  : 命中时间, 1-2 clock cycles for L1; 5-20 clock cycles for L2}
+  \item{Miss Penalty : 失效损失, Typically 50-200 cycles for main memory}
+  \item{平均访问时间 = $hit time + (miss rate \times miss penalty)$}
+  \item{充分利用程序局部性：时间局部性和空间局部性}
+  \item{如果事先不知道CPU的Cache指标，如何通过程序计算出CPU 的Cache 大小。}
+	\begin{itemize}
+	  \item{首先分配 $\omega$ 大小的数组}
+	  \item{以$S$为步长重复访问内存元素，并计算每次访问时间}
+	  \item{改变 $\omega$ 和 $S$，重复上述步骤，以此估算 Cache 的特性}
+	  \end{itemize}
+  \end{itemize}
+\subsubsection{Discovering your cache's size and performance}
+\subsubsection{Memory Mountain}
+见讲义上的图。
+\subsubsection{Matrix multiply, six ways}
+\subsubsection{Blocked matrix multiplication}
+\subsubsection{Exploiting locality in your programs}
+\subsubsection{Running multiple programs at once}
+\subsubsection{Virtual memory}
+\subsection{Problems}
+\subsection{Solutions}
+\end{CJK}
+\end{document}
