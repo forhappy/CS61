@@ -1,0 +1,124 @@
+\documentclass[a4paper, 11pt]{article}
+
+%%%%%% use packages %%%%%%
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage[unicode]{hyperref}
+\usepackage{indentfirst}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{flafter}
+\usepackage{enumerate}
+\usepackage{leftidx}
+
+%%%%%% indent settings %%%%%%
+\setlength{\parindent}{20pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.25ex}
+\setlength{\baselineskip}{1.0ex}
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{CJK}{UTF8}{gbsn}
+
+
+\title{CS61第八次课程记录}
+\author{傅海平\\
+\textsc{Institute Of Computing Technology,}\\
+\textsc{Chinese Academy Of Sciences}\\
+haipingf@gmail.com\\
+}
+\date{\today}
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Topics}
+\begin{center}
+  \Large{程序的链接和加载 \& 线程}
+\end{center}
+
+\section{progress}
+早上8:30点开始，8:30 - 10:50 学习 lec16-linking\_loading.pdf 和
+lec17-threads.pdf 两张课程讲义，然后11:00开始讨论学习过程中遇到的问题
+。
+\section{learning details}
+\subsection{course sketch}
+\subsubsection{the what and why of linking}
+\begin{itemize}
+  \item{链接}
+	\begin{itemize}
+	  \item{链接定义}
+	  \item{为什么需要链接？}
+	  \item{链接在什么阶段完成？}
+	  \end{itemize}
+  \item{静态链接}
+	  \begin{itemize}
+		\item{编译器完成翻译和链接：gcc 是编译器的驱动程序，它会调用 c 预处理器
+		  ，c 编译器，汇编器和链接编辑器}
+		\end{itemize}
+   \item{链接器}
+	 \begin{itemize}
+	   \item{定义}
+	   \item{3个基本任务：拷贝数据和代码到可执行文件，解析符号，重定位符号（绝
+		 对地址，而非相对地址）}
+	   \item{为什么需要连接器？}
+		 \begin{itemize}
+		   \item{模块化}
+		   \item{效率}
+		   \end{itemize}
+	   \end{itemize}
+\end{itemize}
+\subsubsection{symbol relocation}
+\begin{itemize}
+  \item{链接操作}
+  \end{itemize}
+\subsubsection{symbol resolution}
+\begin{itemize}
+  \item{符号解析}
+  \item{strong \& weak symbols}
+	\begin{itemize}
+	\item{strong symbols:函数名，初始化的全局变量}
+	\item{weak symbols:未初始化的全局变量}
+	\end{itemize}
+  \item{链接规则}
+	\begin{itemize}
+	  \item{多个同名的强符号不能同时存在}
+	  \item{给定同名的强符号和多个弱符号，连接器选择强符号}
+	  \item{给定多个弱符号，则链接器任意选择一个}
+	  \end{itemize}
+	\item{static 关键字: 影响符号的生命期和链接规则}
+  \end{itemize}
+\subsubsection{elf format}
+\begin{itemize}
+\item{elf 头部}
+\item{节区头部表}
+\item{程序头部表}
+\item{.text 节区}
+\item{.rodata 节区}
+\item{.data 节区}
+\item{.bss 节区}
+\item{.symtab 节区}
+\item{.rel.text 节区}
+\item{.rel.data 节区}
+\item{.debug 节区}
+\end{itemize}
+\subsubsection{Loading}
+\begin{itemize}
+\item{加载器}
+  \begin{itemize}
+	\item{execve: 程序加载过程}
+	\item{程序虚拟地址映像}
+	\end{itemize}
+\end{itemize}
+\subsubsection{Static libraries}
+\begin{itemize}
+\item{例子}
+\item{itemize}
+\subsubsection{Shared libraries}
+\begin{itemize}
+\item{例子}
+\end{itemize}
+\subsection{Problems}
+\subsection{Solutions}
+\end{CJK}
+\end{document}
