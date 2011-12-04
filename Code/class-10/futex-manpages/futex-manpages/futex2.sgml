@@ -1,0 +1,242 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+<refentry id="futex2">
+
+<refmeta>
+<refentrytitle>futex</refentrytitle>
+<manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname>futex</refname>
+<refpurpose>Fast Userspace Locking system call</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+    <funcsynopsis>
+      <funcsynopsisinfo>
+	#include &lt;linux/futex.h&gt;
+	#include &lt;sys/time.h&gt;
+      </funcsynopsisinfo>
+
+      <funcprototype>
+	<funcdef>int <function>sys_futex</function></funcdef>
+	<paramdef>void *<parameter>futex</parameter></paramdef>
+	<paramdef>int <parameter>op</parameter></paramdef>
+	<paramdef>int <parameter>val</parameter></paramdef>
+	<paramdef>const struct timespec *<parameter>timeout</parameter></paramdef>
+	<paramdef>void *<parameter>futex2</parameter></paramdef>
+	<paramdef>int <parameter>val3</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+	<funcdef>int <function>sys_futex1</function></funcdef>
+	<paramdef>void *<parameter>futex</parameter></paramdef>
+	<paramdef>int <parameter>op</parameter></paramdef>
+	<paramdef>int <parameter>val</parameter></paramdef>
+	<paramdef>const struct timespec *<parameter>timeout</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+	<funcdef>int <function>sys_futex2</function></funcdef>
+	<paramdef>void *<parameter>futex1</parameter></paramdef>
+	<paramdef>int <parameter>op</parameter></paramdef>
+	<paramdef>int <parameter>val1</parameter></paramdef>
+	<paramdef>int <parameter>val2</parameter></paramdef>
+	<paramdef>void *<parameter>futex2</parameter></paramdef>
+	<paramdef>int <parameter>val3</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+	<funcdef>int <function>sys_futex3</function></funcdef>
+	<paramdef>void *<parameter>futex1</parameter></paramdef>
+	<paramdef>int <parameter>op</parameter></paramdef>
+	<paramdef>int <parameter>val1</parameter></paramdef>
+	<paramdef>int <parameter>val2</parameter></paramdef>
+	<paramdef>void *<parameter>futex2</parameter></paramdef>
+      </funcprototype>
+
+    </funcsynopsis>
+</refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>
+	The <function>sys_futex</function> system call provides a method for
+	a program to wait for a value at a given address to change, and a
+	method to wake up anyone waiting on a particular address. While the
+	addresses for the same memory in separate processes may not be
+	identical, the kernel maps them interally so the same memory mapped in
+	different locations will correspond for
+	<function>sys_futex</function> calls.  Futexes are typically used to
+	implement the contended case of a lock in shared memory, as
+	described in
+	<citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>.
+    </para>
+    <para>
+      When a 
+      <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>
+      operation does not finish uncontended in userspace, a call needs to be made to the kernel
+      to arbitrate. Arbitration can either mean putting the calling process to sleep or, conversely, 
+      waking a waiting process.
+    </para>
+    <para>
+      Callers of this function are expected to adhere to the semantics as set out in
+      <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>. As these
+      semantics involve writing non-portable assembly instructions, this in turn
+      probably means that most users will in fact be library authors and not general application developers.
+    </para>
+    <para>
+      The <parameter>futex</parameter> and <parameter>futex2</parameter> arguments need to point at aligned 32 bit integers which store 
+      the counter. The operation to execute is passed via the <parameter>op</parameter> parameter, along with a value <parameter>val</parameter>.
+    </para>
+    <para>
+      Because of historical reasons, the futex system call is highly overloaded. The <function>sys_futex</function> prototype is the canonical
+      invocation, while <function>sys_futex1</function> was the original implementation. It should be noted that there is but one system call,
+      only the number of the parameters and their names differ. 
+    </para>
+    <para>
+      Five operations are currently defined:
+      <variablelist>
+	<varlistentry><term>FUTEX_WAIT</term>
+	  <listitem>
+	    <para>
+	      This operation atomically verifies that the futex address still contains the value given, and sleeps awaiting <parameter>FUTEX_WAKE</parameter> on this futex address.  If the 
+	      <parameter>timeout</parameter> argument is non-NULL, its contents describe the maximum duration 
+	      of the wait, which is infinite otherwise.  For <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>, this call is executed if decrementing the count gave a negative value (indicating contention), and will sleep until another process  releases the futex and executes the FUTEX_WAKE operation. 
+	    </para>
+	    <para>
+	      Uses the <function>sys_futex1()</function> prototype.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_WAKE</term>
+	  <listitem>
+	    <para>
+	      This operation wakes at most <parameter>val</parameter>
+	      processes waiting on this futex address (ie. inside
+	      <parameter>FUTEX_WAIT</parameter>).  For <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>, this is executed if incrementing
+	      the count showed that there were waiters, once the futex value has been set to 1 (indicating that it is available).
+	    </para>
+	    <para>
+	      Uses the <function>sys_futex1()</function> prototype.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_CMP_REQUEUE</term>
+	  <listitem>
+	    <para>
+	      Identical to FUTEX_WAKE except that any processes in excess of the number specified in <parameter>val</parameter> are not woken up 
+	      but moved to the futex passed in <parameter>futex2</parameter>. The number of processes to move is capped by 
+	      <parameter>val2</parameter>. Passing 0 makes this operation degenerate into <parameter>FUTEX_WAKE</parameter>.
+	    </para
+	    <para>
+	      This operation can be used to efficiently implement
+	      <citerefentry><refentrytitle>pthread_cond_broadcast</refentrytitle><manvolnum>3</manvolnum></citerefentry> on larger SMP systems. 
+	    </para>
+	    <para>
+	      The value passed in <parameter>val3</parameter> is compared to that of the futex, exactly like <parameter>FUTEX_WAIT</parameter>.
+	      For full details which are outside the scope of this manpage, see the 'Futexes are tricky' article referenced below.
+	    </para>
+	    <para>
+	      Available since kernel version 2.6.7 and uses the <function>sys_futex2()</function> prototype.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_REQUEUE</term>
+	  <listitem>
+	    <para>
+	      Identical to <parameter>FUTEX_CMP_REQUEUE</parameter> except that it does not use <parameter>val3</parameter>, and has been shown
+	      to be prone to race conditions when used to implement 
+	      <citerefentry><refentrytitle>pthread_cond_broadcast</refentrytitle><manvolnum>3</manvolnum></citerefentry>.  
+	      Uses the <function>sys_futex3()</function> prototype.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_FD</term>
+	  <listitem>
+	    <para>
+	      To support asynchronous wakeups, this operation associates a file descriptor with a futex.
+	      If another process executes a FUTEX_WAKE, the process will receive the signal number that
+	      was passed in <parameter>val</parameter>. The calling process must close the returned file 
+	      descriptor after use.
+	    </para>
+	    <para>
+	      To prevent race conditions, the caller should test if the futex has been upped after FUTEX_FD 
+	      returns.
+	    </para>
+	    <para>
+	      Uses the <function>sys_futex1()</function> prototype.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </para>
+  </refsect1>
+  <refsect1><title>Return value</title>
+    <para>
+      Depending on which operation was executed, the returned value has different meanings.
+      <variablelist>
+	<varlistentry><term>FUTEX_WAIT</term>
+	  <listitem>
+	    <para>
+	      Returns 0 if the process was woken by a FUTEX_WAKE call. In case of timeout, -ETIMEDOUT is returned. If the futex was not equal to the expected value, the operation returns -EWOULDBLOCK. Signals (or other spurious wakeups) cause FUTEX_WAIT to return -EINTR.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_WAKE and FUTEX_REQUEUE</term>
+	  <listitem>
+	    <para>
+	      Returns the number of processes woken up (which equals the number of FUTEX_WAIT operations returning 0).
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_CMP_REQUEUE</term>
+	  <listitem>
+	    <para>
+	      Returns -EAGAIN if the mutex did not have the value specified in <parameter>val3</parameter>. Otherwise returns the number
+	      of processes woken up. If this is larger than <parameter>var1</parameter>, processes have been requeued.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry><term>FUTEX_FD</term>
+	  <listitem>
+	    <para>
+	      Returns the new file descriptor associated with the futex.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    <para>
+      All operations may return -EINVAL in case of unaligned futexes, as well as -EFAULT, -EPERM, -EACCESS when passing pointers to bad or 
+      inaccessible memory.
+    </para>
+  </refsect1>
+  <refsect1><title>Notes</title>
+    <para>
+      To reiterate, bare futexes are not intended as an easy to use abstraction for end-users. Implementors
+      are expected to be assembly literate and to have read the sources of the futex userspace library referenced
+      below.
+    </para>
+  </refsect1>
+  <refsect1><title>Authors</title>
+  <para>
+    Futexes were designed and worked on by Hubertus Franke (IBM Thomas J. Watson Research Center), 
+    Matthew Kirkwood, Ingo Molnar (Red Hat) and Rusty Russell (IBM Linux Technology Center). This page written
+    by bert hubert.
+  </para>
+</refsect1>
+  <refsect1><title>Versions</title>
+    <para>
+      Initial futex support was merged in Linux 2.5.7 but with different semantics from those described above.
+      Current semantics are available from Linux 2.5.40 onwards, FUTEX_REQUEUE was added around 2.5.70, whilst 
+      FUTEX_CMP_REQUEUE was added in 2.6.7.
+    </para>
+  </refsect1>
+  <refsect1><title>See also</title>
+    <para>
+      <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>, 
+      `Fuss, Futexes and Furwocks: Fast Userlevel Locking in Linux' (proceedings of the Ottawa Linux 
+      Symposium 2002), 
+      <ulink url="ftp://ftp.nl.kernel.org:/pub/linux/kernel/people/rusty/">futex example library, futex-*.tar.bz2</ulink>,
+      `Futexes are tricky' at <ulink url="http://people.redhat.com/drepper/futex.pdf">http://people.redhat.com/drepper/futex.pdf</ulink>
+    </para>
+  </refsect1>
+</refentry>
+

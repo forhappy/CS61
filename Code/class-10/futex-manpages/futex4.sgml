@@ -1,0 +1,113 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+<refentry id="futex">
+
+<refmeta>
+<refentrytitle>futex</refentrytitle>
+<manvolnum>4</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname>futex</refname>
+<refpurpose>Fast Userspace Locking</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<synopsis>
+#include &lt;linux/futex.h&gt;
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1>
+    <title>Description</title>
+    <para>
+      The Linux kernel provides futexes ('Fast Userspace muTexes') as a building block for fast userspace 
+      locking and semaphores. Futexes are very basic and lend themselves well for building higher level 
+      locking abstractions such as POSIX mutexes.
+    </para>
+    <para>
+      This page does not set out to document all design decisions but restricts itself to issues relevant for 
+      application and library development. Most programmers will in fact not be using futexes directly but 
+      instead rely on system libraries built on them, such as the NPTL pthreads implementation.
+    </para>
+    <para>
+      A futex is identified by a piece of memory which can be shared between different processes. In these 
+      different processes, it need not have identical addresses. In its bare form, a futex has semaphore
+      semantics; it is a counter that can be incremented and decremented atomically; processes can wait for the
+      value to become positive.
+    </para>
+    <para>
+      Futex operation is entirely userspace for the non-contended case. The kernel is only involved to arbitrate
+      the contended case. As any sane design will strive for non-contension, futexes are also optimised
+      for this situation.
+    </para>
+    <para>
+      In its bare form, a futex is an aligned integer which is only touched by atomic assembler
+      instructions. Processes can share this integer over mmap, via shared segments or because they 
+      share memory space, in which case the application is commonly called multithreaded.
+    </para>
+  </refsect1>
+  <refsect1><title>Semantics</title>
+    <para>
+      Any futex operation starts in userspace, but it may necessary to communicate with the kernel using the
+      <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>2</manvolnum></citerefentry> system call.
+    </para>
+    <para>
+      To 'up' a futex, execute the proper assembler instructions that will cause the host CPU to atomically 
+      increment the integer. Afterwards, check if it has in fact changed from 0 to 1, in which case 
+      there were no waiters and the operation is done. This is the non-contended case which is fast and 
+      should be common.
+    </para>
+    <para>
+      In the contended case, the atomic increment changed the counter from -1  (or some other negative number). If this is detected,
+      there are waiters. Userspace should now set the counter to 1 and instruct the kernel to wake up any 
+      waiters using the FUTEX_WAKE operation.
+    </para>
+    <para>
+      Waiting on a futex, to 'down' it, is the reverse operation. Atomically decrement the counter and 
+      check if it changed to 0, in which case the operation is done and the futex was uncontended. In all 
+      other circumstances, the process should set the counter to -1 and request that the kernel wait for 
+      another process to up the futex. This is done using the FUTEX_WAIT operation.
+    </para>
+    <para>
+      The futex system call can optionally be passed a timeout specifying how long the kernel should
+      wait for the futex to be upped. In this case, semantics are more complex and the programmer is referred
+      to <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>2</manvolnum></citerefentry> for
+      more details. The same holds for asynchronous futex waiting.
+    </para>
+  </refsect1>
+  <refsect1><title>Notes</title>
+    <para>
+      To reiterate, bare futexes are not intended as an easy to use abstraction for end-users. Implementors
+      are expected to be assembly literate and to have read the sources of the futex userspace library referenced
+      below.
+    </para>
+    <para>
+      This man page illustrates the most common use of the <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>2</manvolnum></citerefentry> primitives: it is by no means the only one.
+    </para>
+  </refsect1>
+  <refsect1><title>Authors</title>
+  <para>
+    Futexes were designed and worked on by Hubertus Franke (IBM Thomas J. Watson Research Center), 
+    Matthew Kirkwood, Ingo Molnar (Red Hat) and Rusty Russell (IBM Linux Technology Center). This page written
+    by bert hubert.
+  </para>
+</refsect1>
+  <refsect1><title>Versions</title>
+    <para>
+      Initial futex support was merged in Linux 2.5.7 but with different semantics from those described above.
+      Current semantics are available from Linux 2.5.40 onwards, while additional functionality became available around
+      2.5.70 (FUTEX_REQUEUE) and 2.6.7 (FUTEX_CMP_REQUEUE).
+    </para>
+  </refsect1>
+  <refsect1><title>See also</title>
+    <para>
+      <citerefentry><refentrytitle>futex</refentrytitle><manvolnum>4</manvolnum></citerefentry>, 
+      `Fuss, Futexes and Furwocks: Fast Userlevel Locking in Linux' (proceedings of the Ottawa Linux 
+      Symposium 2002), 
+      <ulink url="ftp://ftp.nl.kernel.org:/pub/linux/kernel/people/rusty/">futex example library, futex-*.tar.bz2</ulink>,
+      `Futexes are tricky' at <ulink url="http://people.redhat.com/drepper/futex.pdf">http://people.redhat.com/drepper/futex.pdf</ulink>
+
+    </para>
+  </refsect1>
+</refentry>
+
