@@ -1,0 +1,131 @@
+\documentclass[a4paper, 11pt]{article}
+
+%%%%%% use packages %%%%%%
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage[unicode,pdftex]{hyperref}
+\usepackage{indentfirst}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{flafter}
+\usepackage{enumerate}
+\usepackage{leftidx}
+
+%%%%%% indent settings %%%%%%
+\setlength{\parindent}{20pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.25ex}
+\setlength{\baselineskip}{1.0ex}
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{CJK}{UTF8}{gbsn}
+
+\title{CS61第十次课程记录}
+\author{傅海平\\
+\textsc{Institute Of Computing Technology,}\\
+\textsc{Chinese Academy Of Sciences}\\
+haipingf@gmail.com\\
+}
+\date{\today}
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Topics}
+\begin{center}
+  \Large{线程}
+\end{center}
+
+\section{progress}
+早上8:30点开始，8:30 - 10:30 学习 lec18.pdf 课程讲义，然后11:00开始讨论学习过程中遇到的问题。
+\section{learning details}
+\subsection{course sketch}
+\subsubsection{Why to synchronize multiple threads}
+\begin{itemize}
+  \item{Interleaved Execution}
+  \item{多个线程执行可以抢占}
+  \item{顺序一致性}
+  \item{多处理器\&多核情况下调度，Cache 管理}
+  \item{Relaxed Memory Models(Sequential-consistent ordering \& Relaxed
+	ordering \& acquire-release ordering)}
+	\begin{itemize}
+	  \item{Seqential Consistent Ordering}
+		\begin{itemize}
+		  \item{sequential-consistent model 是沿袭 Java 的内存模型(确切的说是
+			sequential-consistent with data-race-free)，所有的 atomic 操作都可以
+			看作满足唯一 total order 的操作，也就是说，可以把这样的多线程程序理
+			解成一个有先有后交叉运行的单线程程序(对atomic type而言)，这在推理时
+			是有帮助的。每个 shared atomic 对象的改变在每个线程看来都是一样的，
+			包括时间顺序以及值。}
+		  \end{itemize}
+	  \end{itemize}
+
+	\begin{itemize}
+	  \item{Relaxed Memory Ordering}
+		\begin{itemize}
+		  \item{完全不参与多线程间的同步，编译器可以随便优化。}
+		  \item{对于自身线程，data-dependency 产生的依赖需要满足，这是单线程程序
+			正确性的要求。}
+		  \item{此外它唯一的作用就是属于原子操作，所以不会产生 data race。}
+			
+		  \end{itemize}
+	  \end{itemize}
+
+	\begin{itemize}
+	  \item{Acquire Release Ordering}
+		\begin{itemize}
+		  \item{该语义即同步语义，每一个 acquire 对应一个 release(跨线程的)，详
+			细定义参见标准(29.3-2)。需要注意的是 C++ 的同步语义不是先验的，我们
+			无法通过之前的执行判断之后两个操作是否同步了，而只能通过推理所有的情
+			况来验证程序的正确性。具体来说，对于一个可能的 acquire-release pair
+			，我们必须考虑他们同步时的情况，也需要考虑他们没有同步时的情况。推理
+			C++ 多线程程序的正确性，特别是在这两种 ordering 情况下，需要塑模
+			happens-before 的关系，通俗点说，就是推理出相关操作之间
+			所有可能发生的顺序(或者根本就无序)，所以说带锁的多线程的程序很难写正
+			确，更别说无锁的，可见一斑。}
+		  \end{itemize}
+	  \end{itemize}
+  \end{itemize}
+\subsubsection{Race conditions}
+\begin{itemize}
+  \item{并行程序访问共享变量时没有线程\&进程间的同步。}
+  \item{程序执行结果是非确定的。}
+  \item{现实中的例子}
+  \item{解决方案}
+  \end{itemize}
+\subsubsection{Mutual exclusion and critical sections}
+\begin{itemize}
+  \item{互斥和临界区}
+  \item{临界区定义}
+  \end{itemize}
+\subsubsection{Locks}
+\begin{itemize}
+  \item{acquire}
+  \item{release}
+  \item{锁机制实现}
+	\begin{itemize}
+	  \item{实现锁机制需要硬件支持}
+	  \item{禁止中断：防止上下文切换，但是该方法只在单处理器上有效}
+	  \end{itemize}
+  \end{itemize}
+
+\begin{itemize}
+  \item{spinlock自旋锁}
+  \item{原子操作：CPU保证整个操作是原子的}
+	\begin{itemize}
+	  \item{Test-and-set}
+	  \item{Compare-and-swap}
+	  \end{itemize}
+  \item{忙等待，效率}
+  \item{用户空间锁机制实现：futex}
+  \end{itemize}
+\subsubsection{Efficiently implementing locks}
+\begin{itemize}
+  \item{见讲义}
+  \end{itemize}
+\subsection{Problems}
+\subsection{Solutions}
+\section{测试}
+\newpage
+\end{CJK}
+\end{document}
