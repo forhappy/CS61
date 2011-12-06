@@ -1,0 +1,111 @@
+\documentclass[a4paper, 11pt]{article}
+
+%%%%%% use packages %%%%%%
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage[unicode,pdftex]{hyperref}
+\usepackage{indentfirst}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{flafter}
+\usepackage{enumerate}
+\usepackage{leftidx}
+
+%%%%%% indent settings %%%%%%
+\setlength{\parindent}{20pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.25ex}
+\setlength{\baselineskip}{1.0ex}
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{CJK}{UTF8}{gbsn}
+
+\title{CS61第十一次课程记录}
+\author{傅海平\\
+\textsc{Institute Of Computing Technology,}\\
+\textsc{Chinese Academy Of Sciences}\\
+haipingf@gmail.com\\
+}
+\date{\today}
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Topics}
+\begin{center}
+  \Large{Semaphores}
+\end{center}
+
+\section{progress}
+早上8:30点开始，8:30 - 10:30 学习 lec19.pdf 课程讲义，然后11:00开始讨论学习过程中遇到的问题。
+\section{learning details}
+\subsection{course sketch}
+\subsubsection{Semaphores}
+\begin{itemize}
+  \item{信号量}
+	\begin{itemize}
+	  \item{高层次同步}
+	  \item{共享的计数器}
+	  \item{PV操作，或wait()、signal()，或down()、up()}
+	  \item{原子性}
+	  \item{二元信号量}
+	  \item{信号量的实现}
+	  \item{生产者\&消费者问题}
+	  \item{又称有界缓冲区模型}
+		\subitem{1.\-}{生产者向缓冲区放入产品}
+		\subitem{2.\-}{消费者从缓冲区中取出产品并进行消费}
+		\subitem{3.\-}{当缓冲区为满时生产者必须等待}
+		\subitem{4.\-}{当缓冲区为空时消费者必须等待}
+	  \item{信号量函数库（不是pthread库的一部分）}
+		\subitem{sem\_init()}
+		\subitem{sem\_wait()}
+		\subitem{sem\_post()}
+		\subitem{sem\_getvalue()}
+	  \item{信号量缺点}
+	  \end{itemize}
+  \end{itemize}
+\subsubsection{Condition variables}
+\begin{itemize}
+  \item{条件变量}
+  \item{条件变量：线程可以等待和唤醒的条件}
+  \item{条件变量代表某一事件，不能从一次CV操作中保存或获取其值。}
+  \item{三种操作}
+	\subitem{wait()}
+	\subitem{signal()}
+	\subitem{broadcast()}
+  \item{在Pthread中，条件变量表示为：pthread\_cond\_t}
+	\subitem{pthread\_cond\_t cond = PTHREAD\_COND\_INITIALIZER;}
+    \subitem{int pthread\_cond\_init(pthread\_cond\_t *cond, pthread\_condattr\_t
+	 *cond\_attr);}
+	 \subitem{int pthread\_cond\_signal(pthread\_cond\_t *cond);}
+	 \subitem{int pthread\_cond\_broadcast(pthread\_cond\_t *cond);}
+	 \subitem{int pthread\_cond\_wait(pthread\_cond\_t *cond, pthread\_mutex\_t *mutex);}
+     \subitem{int pthread\_cond\_timedwait(pthread\_cond\_t   *cond,
+	 pthread\_mutex\_t
+	   *mutex, const struct timespec *abstime);}
+	 \subitem{int pthread\_cond\_destroy(pthread\_cond\_t *cond);}
+   \item{在实际编程时，条件变量应该由锁来保护}
+	 \subitem{在某一条件变量上调用wait()将释放锁。}
+	 \subitem{在某一条件变量上调用signal()会唤醒等待该条件变量的线程。}
+	 \subitem{被唤醒的线程必须在wait()返回时重新申请锁。}
+  \end{itemize}
+\subsubsection{Monitors}
+\begin{itemize}
+  \item{监视器：Monitors}
+  \item{监视器是一个包含了变量，条件变量和方法的对象。}
+  \item{任何时刻只有一个线程在监视器中是活动的。}
+  \end{itemize}
+\subsection{Problems}
+\subsection{Solutions}
+\subsubsection{Posix Semaphores}
+\begin{itemize}
+  \item{int sem\_init(sem\_t *sem, int pshared, unsigned int value);}
+  \item{int sem\_wait(sem\_t *sem);}
+  \item{int sem\_post(sem\_t *sem);}
+  \item{int sem\_getvalue(sem\_t *sem, int *valp);}
+  \item{ int sem\_destroy(sem\_t *sem);}
+  \end{itemize}
+\section{测试}
+\newpage
+\end{CJK}
+\end{document}
